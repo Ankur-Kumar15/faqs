@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+
+        .faq-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .faq-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .tabs {
+            display: flex;
+            background: #fff;
+            position: relative;
+            overflow-x: auto;
+            scrollbar-width: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 5px;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            padding: 20px 30px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .tab:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(33, 150, 243, 0.1);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+        }
+
+        .tab.active {
+            color: #2196F3;
+        }
+
+        .tab.active:before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .tab:hover {
+            color: #2196F3;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .faq-question {
+            padding: 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .faq-question:after {
+            content: '';
+            width: 24px;
+            height: 24px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232196F3'%3E%3Cpath d='M12 0a12 12 0 1 0 12 12A12.013 12.013 0 0 0 12 0zm0 22a10 10 0 1 1 10-10 10.011 10.011 0 0 1-10 10zm5-10a1 1 0 0 1-1 1h-3v3a1 1 0 0 1-2 0v-3H8a1 1 0 0 1 0-2h3V8a1 1 0 0 1 2 0v3h3a1 1 0 0 1 1 1z'/%3E%3C/svg%3E") no-repeat center;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .faq-item.active .faq-question {
+            color: #2196F3;
+        }
+
+        .faq-item.active .faq-question:after {
+            transform: rotate(135deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            color: #666;
+            background: rgba(33, 150, 243, 0.02);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 20px 25px;
+            max-height: 1000px;
+            opacity: 1;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Category Badges */
+        .tab span {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 8px;
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active span {
+            background: #2196F3;
+            color: white;
+        }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute;
+            background: rgba(33, 150, 243, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .faq-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .tab {
+                padding: 15px 20px;
+                font-size: 14px;
+            }
+
+            .tab span {
+                display: none;
+            }
+
+            .faq-question {
+                padding: 20px;
+                font-size: 15px;
+            }
+
+            .faq-item.active .faq-answer {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="faq-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="general">General <span>5</span></button>
+            <button class="tab" data-tab="account">Account <span>3</span></button>
+            <button class="tab" data-tab="pricing">Pricing <span>4</span></button>
+            <button class="tab" data-tab="support">Support <span>2</span></button>
+        </div>
+
+        <div id="general" class="tab-content active">
+            <div class="faq-item">
+                <div class="faq-question">What is your return policy?</div>
+                <div class="faq-answer">
+                    We offer a hassle-free 30-day return policy. Items must be unused and in their original packaging. 
+                    Simply contact our support team to initiate a return, and we'll provide a prepaid shipping label.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">How do I track my order?</div>
+                <div class="faq-answer">
+                    Tracking your order is easy! Log into your account and visit the "Order History" section. 
+                    You'll find real-time tracking information and estimated delivery dates for all your purchases.
+                </div>
+            </div>
+        </div>
+
+        <div id="account" class="tab-content">
+            <div class="faq-item">
+                <div class="faq-question">How do I reset my password?</div>
+                <div class="faq-answer">
+                    To reset your password, click the "Forgot Password" link on the login page. We'll send you a secure 
+                    reset link to your registered email address. The link expires in 24 hours for security.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Can I have multiple shipping addresses?</div>
+                <div class="faq-answer">
+                    Yes! You can save multiple shipping addresses in your account settings. During checkout, 
+                    simply select your preferred delivery address from your saved locations.
+                </div>
+            </div>
+        </div>
+
+        <div id="pricing" class="tab-content">
+            <div class="faq-item">
+                <div class="faq-question">Do you offer bulk discounts?</div>
+                <div class="faq-answer">
+                    Yes, we offer progressive discounts for bulk orders. The discount percentage increases with 
+                    the order quantity. Contact our sales team for a custom quote on large orders.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Are there any hidden fees?</div>
+                <div class="faq-answer">
+                    No hidden fees! We believe in transparent pricing. The price you see includes all costs 
+                    except shipping, which is calculated at checkout based on your location.
+                </div>
+            </div>
+        </div>
+
+        <div id="support" class="tab-content">
+            <div class="faq-item">
+                <div class="faq-question">What are your support hours?</div>
+                <div class="faq-answer">
+                    Our support team is available 24/7 for urgent issues. Regular support hours are 
+                    Monday to Friday, 9 AM to 6 PM EST. Weekend support is available via email.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Do you offer phone support?</div>
+                <div class="faq-answer">
+                    Yes, phone support is available during business hours at 1-800-123-4567. 
+                    For faster service, please have your order number ready when you call.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ripple effect
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            ripple.style.width = ripple.style.height = `${diameter}px`;
+            
+            const rect = button.getBoundingClientRect();
+            ripple.style.left = `${event.clientX - rect.left - diameter / 2}px`;
+            ripple.style.top = `${event.clientY - rect.top - diameter / 2}px`;
+            
+            button.appendChild(ripple);
+            ripple.addEventListener('animationend', () => ripple.remove());
+        }
+
+        // Tab switching with enhanced animations
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                createRipple(e);
+                
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                });
+
+                tab.classList.add('active');
+
+                const contentId = tab.getAttribute('data-tab');
+                const content = document.getElementById(contentId);
+                content.style.display = 'block';
+                requestAnimationFrame(() => {
+                    content.classList.add('active');
+                });
+            });
+        });
+
+        // Smooth FAQ accordion with enhanced animations
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                const parentTab = question.closest('.tab-content');
+                parentTab.querySelectorAll('.faq-item').forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                
+                if (!isActive) {
+                    item.classList.add('active');
+                    item.style.transform = 'scale(1.01)';
+                    setTimeout(() => {
+                        item.style.transform = 'scale(1)';
+                    }, 200);
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
